@@ -133,7 +133,8 @@ int main(int argc, char** argv) {
     while (g_game_over != 1)
     {
         usleep(100000);  // render for 100ms
-        update(cells, width, height, NULL, INPUT_NONE, 0);
+        enum input_key input = get_input();
+        update(cells, width, height, NULL, input, 0);
         render_game(cells, width, height);
     }
     end_game(cells, width, height, &snake);

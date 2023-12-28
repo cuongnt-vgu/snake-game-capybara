@@ -34,8 +34,30 @@ void update(int* cells, size_t width, size_t height, snake_t* snake_p,
         input = g_snake_direction;
     }
 
-    // Move to the right
-    int new_position = g_snake_head + 1;  // TODO: update this!
+    int new_position;
+    
+    switch (input)
+    {
+        case INPUT_UP:
+            new_position = g_snake_head - width;
+            g_snake_direction = NORTH;
+            break;
+        case INPUT_DOWN:
+            new_position = g_snake_head + width;
+            g_snake_direction = SOUTH;
+            break;
+        case INPUT_LEFT:
+            new_position = g_snake_head - 1;
+            g_snake_direction = WEST;
+            break;
+        case INPUT_RIGHT:
+            new_position = g_snake_head + 1;
+            g_snake_direction = EAST;
+            break;
+        default:
+            break;
+    }
+
     if (cells[new_position] == FLAG_WALL)
     {
         g_game_over = 1;
@@ -44,7 +66,7 @@ void update(int* cells, size_t width, size_t height, snake_t* snake_p,
     if (g_game_over) {
         return;
     }
-    
+
     cells[new_position] = FLAG_SNAKE;
     cells[g_snake_head] = FLAG_PLAIN_CELL;
     
