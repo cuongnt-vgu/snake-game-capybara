@@ -129,7 +129,12 @@ int main(int argc, char** argv) {
 
     // initialize_window(width, height);
     // TODO: implement the game loop here (Part 1A)!
-    
-    
+
+    while (g_game_over != 1)
+    {
+        usleep(100000);  // render for 100ms
+        update(cells, width, height, NULL, INPUT_NONE, 0);
+        render_game(cells, width, height);
+    }
     end_game(cells, width, height, &snake);
 }
