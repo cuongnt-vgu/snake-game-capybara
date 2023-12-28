@@ -83,8 +83,9 @@ enum board_init_status initialize_game(int** cells_p, size_t* width_p,
     
     g_game_over = 0;  // Game is not over
     g_score = 0;  // Score is 0
-    g_snake_direction = EAST;  // Snake starts moving north
+    g_snake_direction = EAST;  // Snake init to move the right.
     g_snake_length = 1;  // Snake starts with length 1;
+    g_snake_head = 42;  // Snake starts at arr[2][2] (42)
 
     enum board_init_status status = initialize_default_board(cells_p, width_p,
                                                              height_p);

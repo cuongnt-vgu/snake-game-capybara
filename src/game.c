@@ -29,6 +29,26 @@ void update(int* cells, size_t width, size_t height, snake_t* snake_p,
     // walls, so it does not handle the case where a snake runs off the board.
 
     // TODO: implement!
+
+    if (input == INPUT_NONE){
+        input = g_snake_direction;
+    }
+
+    // Move to the right
+    int new_position = g_snake_head + 1;  // TODO: update this!
+    if (cells[new_position] == FLAG_WALL)
+    {
+        g_game_over = 1;
+    }
+    
+    if (g_game_over) {
+        return;
+    }
+    
+    cells[new_position] = FLAG_SNAKE;
+    cells[g_snake_head] = FLAG_PLAIN_CELL;
+    
+    g_snake_head = new_position;
 }
 
 /** Sets a random space on the given board to food.
