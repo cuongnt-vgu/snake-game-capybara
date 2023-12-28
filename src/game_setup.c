@@ -89,6 +89,9 @@ enum board_init_status initialize_game(int** cells_p, size_t* width_p,
 
     enum board_init_status status = initialize_default_board(cells_p, width_p,
                                                              height_p);
+
+    place_food(*cells_p, *width_p, *height_p);  // Place food on the board
+
     return status;
 }
 

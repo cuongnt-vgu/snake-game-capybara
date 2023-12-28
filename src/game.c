@@ -66,7 +66,14 @@ void update(int* cells, size_t width, size_t height, snake_t* snake_p,
     if (g_game_over) {
         return;
     }
-
+    
+    // FOOD
+    if (cells[new_position] == FLAG_FOOD)
+    {
+        g_score++;
+        place_food(cells, width, height);
+    }
+    
     cells[new_position] = FLAG_SNAKE;
     cells[g_snake_head] = FLAG_PLAIN_CELL;
     
