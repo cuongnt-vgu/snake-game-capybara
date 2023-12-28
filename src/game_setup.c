@@ -14,6 +14,14 @@
 #define DIGIT_START 0x30
 #define DIGIT_END 0x39
 
+// Global variables for game status.
+int g_game_over;
+int g_score;
+
+g_snake_direction_t g_snake_direction;
+int g_snake_length;
+int g_snake_head;
+
 /** Initializes the board with walls around the edge of the board.
  *
  * Modifies values pointed to by cells_p, width_p, and height_p and initializes
@@ -72,9 +80,15 @@ enum board_init_status initialize_default_board(int** cells_p, size_t* width_p,
 enum board_init_status initialize_game(int** cells_p, size_t* width_p,
                                        size_t* height_p, snake_t* snake_p,
                                        char* board_rep) {
-    // TODO: implement!
+    
+    g_game_over = 0;  // Game is not over
+    g_score = 0;  // Score is 0
+    g_snake_direction = EAST;  // Snake starts moving north
+    g_snake_length = 1;  // Snake starts with length 1;
 
-    return INIT_SUCCESS;
+    enum board_init_status status = initialize_default_board(cells_p, width_p,
+                                                             height_p);
+    return status;
 }
 
 /** Takes in a string `compressed` and initializes values pointed to by

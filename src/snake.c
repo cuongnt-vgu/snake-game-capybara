@@ -129,5 +129,7 @@ int main(int argc, char** argv) {
 
     // initialize_window(width, height);
     // TODO: implement the game loop here (Part 1A)!
-    // end_game(cells, width, height, &snake);
+    
+    
+    end_game(cells, width, height, &snake);
 }
