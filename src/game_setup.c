@@ -112,5 +112,65 @@ enum board_init_status decompress_board_str(int** cells_p, size_t* width_p,
                                             size_t* height_p, snake_t* snake_p,
                                             char* compressed) {
     // TODO: implement!
-    return INIT_UNIMPLEMENTED;
+    int size_delim = 0;
+    int board_delim = 0;
+    
+    int i = 0;
+    while (compressed[i++] != '\0')
+    {
+        // check BAD_CHAR
+        int is_num = (compressed[i] >= 48) && (compressed[i] <= 57);
+        int is_valid_char = (compressed[i] == 42) || 
+                            (compressed[i] == 69) || 
+                            (compressed[i] == 87) || 
+                            (compressed[i] == 83) || 
+                            (compressed[i] == 120) || 
+                            (compressed[i] == 124);
+        if (!is_num && !is_valid_char)
+        {
+            return INIT_ERR_BAD_CHAR;
+        }
+    
+    }
+    
+    
+    while (compressed[board_delim] != "|")
+    {
+        if (compressed[board_delim] == "x")
+        {
+            size_delim = board_delim;
+        }
+
+        board_delim++;
+    }
+
+    int height_num = size_delim - 1;
+    int width_num = board_delim - (size_delim+1);
+    char height_char[height_num], width_char[width_num];
+
+    // Height loop
+    for (int i = 0; i < height_num; i++)
+    {
+        height_char[i] = compressed[1+i];
+    }
+    *height_p = atoi(height_char);
+    
+    // Width loop
+    for (int i = 0; i < width_num; i++)
+    {
+        width_char[i] = compressed[size_delim + 1 + i];
+    }
+    *width_p = atoi(width_char);
+
+    // (compressed[] >= 48) && (compressed[] <= 57)  // Check if the char is a digit
+    // 0 // ASCII value of NULL
+    // 42 // ASCII value of B
+    // 69 // ASCII value of E
+    // 87 // ASCII value of W
+    // 83 // ASCII value of S
+    // 120 // ASCII value of x
+    // 124 // ASCII value of |
+
+    
+    return INIT_SUCCESS;
 }
