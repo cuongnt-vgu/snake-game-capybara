@@ -24,6 +24,9 @@
  *  - width: width of the board
  *  - height: height of the board
  */
+int g_name_len;
+char* g_name;
+
 void render_game_over(size_t width, size_t height) {
     /* DO NOT MODIFY THIS FUNCTION */
 

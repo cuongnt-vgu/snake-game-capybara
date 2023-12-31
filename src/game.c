@@ -30,14 +30,13 @@ void update(int* cells, size_t width, size_t height, snake_t* snake_p,
 
     // TODO: implement!
 
-    if (input == INPUT_NONE){
+    if (input == INPUT_NONE) {
         input = g_snake_direction;
     }
 
     int new_position;
-    
-    switch (input)
-    {
+
+    switch (input) {
         case INPUT_UP:
             new_position = g_snake_head - width;
             g_snake_direction = NORTH;
@@ -58,25 +57,23 @@ void update(int* cells, size_t width, size_t height, snake_t* snake_p,
             break;
     }
 
-    if (cells[new_position] == FLAG_WALL)
-    {
+    if (cells[new_position] == FLAG_WALL) {
         g_game_over = 1;
     }
-    
+
     if (g_game_over) {
         return;
     }
-    
+
     // FOOD
-    if (cells[new_position] == FLAG_FOOD)
-    {
+    if (cells[new_position] == FLAG_FOOD) {
         g_score++;
         place_food(cells, width, height);
     }
-    
+
     cells[new_position] = FLAG_SNAKE;
     cells[g_snake_head] = FLAG_PLAIN_CELL;
-    
+
     g_snake_head = new_position;
 }
 
@@ -105,7 +102,21 @@ void place_food(int* cells, size_t width, size_t height) {
 void read_name(char* write_into) {
     // TODO: implement! (remove the call to strcpy once you begin your
     // implementation)
-    strcpy(write_into, "placeholder");
+    // strcpy(write_into, "placeholder");
+    int res = 0;
+
+    do {
+        printf("Name > ");
+        fflush(0);
+        res = read(0, write_into, 1000);
+        if (res > 0) {
+            return;
+        }
+        else
+        {
+            printf("Name Invalid: must be longer than 0 characters.");
+        }
+    } while (res == 0);
 }
 
 /** Cleans up on game over — should free any allocated memory so that the
@@ -116,6 +127,6 @@ void read_name(char* write_into) {
  *  - snake_p: a pointer to your snake struct. (not needed until part 2)
  */
 void teardown(int* cells, snake_t* snake_p) {
-    // TODO: implement! 
+    // TODO: implement!
     free(cells);
 }
