@@ -13,6 +13,9 @@
 #define W_LOW_HEX 0x77
 #define DIGIT_START 0x30
 #define DIGIT_END 0x39
+#define DELIMITER '|'
+
+typedef unsigned int uint;
 
 // Global variables for game status.
 int g_game_over;
@@ -80,15 +83,14 @@ enum board_init_status initialize_default_board(int** cells_p, size_t* width_p,
 enum board_init_status initialize_game(int** cells_p, size_t* width_p,
                                        size_t* height_p, snake_t* snake_p,
                                        char* board_rep) {
-    
-    g_game_over = 0;  // Game is not over
-    g_score = 0;  // Score is 0
+    g_game_over = 0;           // Game is not over
+    g_score = 0;               // Score is 0
     g_snake_direction = EAST;  // Snake init to move the right.
-    g_snake_length = 1;  // Snake starts with length 1;
-    g_snake_head = 42;  // Snake starts at arr[2][2] (42)
+    g_snake_length = 1;        // Snake starts with length 1;
+    g_snake_head = 42;         // Snake starts at arr[2][2] (42)
 
-    enum board_init_status status = initialize_default_board(cells_p, width_p,
-                                                             height_p);
+    enum board_init_status status =
+        initialize_default_board(cells_p, width_p, height_p);
 
     place_food(*cells_p, *width_p, *height_p);  // Place food on the board
 
@@ -111,66 +113,111 @@ enum board_init_status initialize_game(int** cells_p, size_t* width_p,
 enum board_init_status decompress_board_str(int** cells_p, size_t* width_p,
                                             size_t* height_p, snake_t* snake_p,
                                             char* compressed) {
-    // TODO: implement!
-    int size_delim = 0;
-    int board_delim = 0;
-    
-    int i = 0;
-    while (compressed[i++] != '\0')
-    {
-        // check BAD_CHAR
-        int is_num = (compressed[i] >= 48) && (compressed[i] <= 57);
-        int is_valid_char = (compressed[i] == 42) || 
-                            (compressed[i] == 69) || 
-                            (compressed[i] == 87) || 
-                            (compressed[i] == 83) || 
-                            (compressed[i] == 120) || 
-                            (compressed[i] == 124);
-        if (!is_num && !is_valid_char)
-        {
-            return INIT_ERR_BAD_CHAR;
+    char** main_save_ptr = &compressed;
+    char size_delimiter = 'x';
+    char delimiter = DELIMITER;
+    char* board_argument = strtok_r(compressed, &delimiter, main_save_ptr);
+    char** board_save_ptr = &board_argument;
+    char temp = board_argument[0];
+
+    int snake_pos_found = 0;
+    uint current_height = 1;
+    uint current_width;
+    int current_flag;
+    int current_run;
+
+    int position[3] = {0, 0, 3};
+
+    board_argument[0] = '0';
+
+    *height_p = atoi(strtok_r(board_argument, &size_delimiter, board_save_ptr));
+    *width_p = atoi(strtok_r(NULL, &size_delimiter, board_save_ptr));
+
+    int* cells = malloc(*height_p * *width_p * sizeof(int));
+    *cells_p = cells;
+    int* current_position = *cells_p;
+
+    if (temp != 'B') {
+        return INIT_ERR_BAD_CHAR;
+    }
+
+    board_argument = strtok_r(NULL, &delimiter, main_save_ptr);
+
+    while (board_argument != NULL) {
+        if (current_height > *height_p) {
+            return INIT_ERR_INCORRECT_DIMENSIONS;
         }
-    
-    }
-    
-    
-    while (compressed[board_delim] != "|")
-    {
-        if (compressed[board_delim] == "x")
-        {
-            size_delim = board_delim;
+
+        current_width = 0;
+
+        while (*board_argument != '\0') {
+            switch (*board_argument) {
+                case E_CAP_HEX:
+                case E_LOW_HEX: {
+                    current_flag = FLAG_PLAIN_CELL;
+                    break;
+                }
+
+                case W_CAP_HEX:
+                case W_LOW_HEX: {
+                    current_flag = FLAG_WALL;
+                    break;
+                }
+
+                case S_CAP_HEX:
+                case S_LOW_HEX: {
+                    current_flag = FLAG_SNAKE;
+                    break;
+                }
+
+                default: {
+                    return INIT_ERR_BAD_CHAR;
+                }
+            }
+
+            board_argument++;
+            current_run = 0;
+
+            while (*board_argument >= DIGIT_START && *board_argument <= DIGIT_END) {
+                current_run *= 10;
+                current_run += *board_argument - 48;
+                board_argument++;
+            }
+
+            current_width += current_run;
+            
+            if (current_flag == FLAG_SNAKE) {
+                position[0] = current_height - 1;
+                position[1] = current_width - 1;
+                snake_pos_found += current_run;
+            }
+
+            if (current_width > *width_p) {
+                return INIT_ERR_INCORRECT_DIMENSIONS;
+            }
+
+            for (int i = 0; i < current_run; i++) {
+                *current_position = current_flag;
+                current_position++;
+            }
+
         }
 
-        board_delim++;
+        if (current_width != *width_p) {
+            return INIT_ERR_INCORRECT_DIMENSIONS;
+        }
+
+        current_height += 1;
+        board_argument = strtok_r(NULL, &delimiter, main_save_ptr);
     }
 
-    int height_num = size_delim - 1;
-    int width_num = board_delim - (size_delim+1);
-    char height_char[height_num], width_char[width_num];
-
-    // Height loop
-    for (int i = 0; i < height_num; i++)
-    {
-        height_char[i] = compressed[1+i];
+    if (current_height-1 < *height_p) {
+        return INIT_ERR_INCORRECT_DIMENSIONS;
     }
-    *height_p = atoi(height_char);
-    
-    // Width loop
-    for (int i = 0; i < width_num; i++)
-    {
-        width_char[i] = compressed[size_delim + 1 + i];
+
+    if (snake_pos_found != 1) {
+        return INIT_ERR_WRONG_SNAKE_NUM;
     }
-    *width_p = atoi(width_char);
-
-    // (compressed[] >= 48) && (compressed[] <= 57)  // Check if the char is a digit
-    // 0 // ASCII value of NULL
-    // 42 // ASCII value of B
-    // 69 // ASCII value of E
-    // 87 // ASCII value of W
-    // 83 // ASCII value of S
-    // 120 // ASCII value of x
-    // 124 // ASCII value of |
-
     
     return INIT_SUCCESS;
 }
