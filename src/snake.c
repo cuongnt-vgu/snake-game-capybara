@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "game.h"
 #include "game_over.h"
@@ -12,6 +13,8 @@
 #include "mbstrings.h"
 #include "render.h"
 
+char* g_name;
+int g_name_len;
 /** Gets the next input from the user, or returns INPUT_NONE if no input is
  * provided quickly enough.
  */
@@ -45,13 +48,11 @@ void end_game(int* cells, size_t width, size_t height, snake_t* snake_p) {
     teardown(cells, snake_p);
 
     // ****************** UNCOMMENT THIS CODE IN PART 2B ***********************
-    /*
     // Render final GAME OVER PRESS ANY KEY TO EXIT screen
     render_game_over(width, height);
     usleep(1000 * 1000);  // 1000ms
     cbreak(); // Leave halfdelay mode
     getch();
-    */
 
     // tell ncurses that we're done
     endwin();
@@ -114,7 +115,9 @@ int main(int argc, char** argv) {
     // TODO: Implement (in Part 2B)
     char name_buffer[1000];
     read_name(name_buffer);
-    // ? save name_buffer ?
+    g_name_len = mbslen(name_buffer);
+    g_name = malloc(g_name_len);
+    strcpy(g_name, name_buffer);
     // ? save mbslen(name_buffer) ?
 
     // TODO: Remove this message, uncomment the code below this message

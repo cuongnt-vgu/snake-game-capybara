@@ -24,31 +24,30 @@
  * You will need bitwise operations for this part of the assignment!
  */
 
-
 size_t mbslen(const char* bytes) {
     if (bytes == NULL) {
         return -1;  // NULL pointer, invalid input
     }
 
     size_t length = 0;
+
     while (*bytes) {
         unsigned char current = (unsigned char)(*bytes);
 
-        // Check if it's a single-byte character (0xxxxxxx)
+        // Single-byte character
         if ((current & 0x80) == 0x00) {
             length++;
             bytes++;
         }
-        // Check if it's the start of a multi-byte character
+        // Multi-byte character
         else if ((current & 0xC0) == 0xC0) {
-            // Determine the number of bytes in the character
             int num_bytes = 0;
             while ((current & 0x80) == 0x80) {
                 current <<= 1;
                 num_bytes++;
             }
 
-            // Validate the number of bytes and check for incomplete sequences
+            // Validate the number of bytes
             if (num_bytes < 2 || num_bytes > 4) {
                 return -1;  // Invalid sequence
             }
