@@ -89,10 +89,19 @@ enum board_init_status initialize_game(int** cells_p, size_t* width_p,
     g_snake_length = 1;        // Snake starts with length 1;
     g_snake_head = 42;         // Snake starts at arr[2][2] (42)
 
-    enum board_init_status status =
-        initialize_default_board(cells_p, width_p, height_p);
+    if (board_rep != NULL) {
+        enum board_init_status status =
+            decompress_board_str(cells_p, width_p, height_p, snake_p, board_rep);
 
+        if (status == INIT_SUCCESS) {
+            place_food(*cells_p, *width_p, *height_p);  // Place food on the board
+        }
+        return status;
+    }
+    
+    enum board_init_status status = initialize_default_board(cells_p, width_p, height_p);
     place_food(*cells_p, *width_p, *height_p);  // Place food on the board
+
 
     return status;
 }
@@ -218,6 +227,6 @@ enum board_init_status decompress_board_str(int** cells_p, size_t* width_p,
     if (snake_pos_found != 1) {
         return INIT_ERR_WRONG_SNAKE_NUM;
     }
-    
+
     return INIT_SUCCESS;
 }
